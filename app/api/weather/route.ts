@@ -1,21 +1,22 @@
 import axios from "axios";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     const apiKey = process.env.OPENWEATHERMAP_API_KEY;
-    const lat = process.env.LATITUDE; // Replace with your desired latitude value
-    const lon = process.env.LONGITUDE; // Replace with your desired longitude value
+
+    const { searchParams } = req.nextUrl;
+
+    const lat = searchParams.get("lat");
+    const lon = searchParams.get("lon");
 
     const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}`;
+
     const res = await axios.get(url);
+
     return NextResponse.json(res.data);
   } catch (error) {
-    console.log("Error fetching forecast data", error);
+    console.log("Error fetching forecast data");
     return new Response("Error fetching forecast data", { status: 500 });
   }
 }
-
-export const config = {
-  runtime: "edge",
-};
